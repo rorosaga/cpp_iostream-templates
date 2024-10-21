@@ -21,22 +21,15 @@ jobs:
       with:
         auto-update-conda: true
 
-    - name: Initialize Conda and Create Environment
-      run: |
-        conda init bash
-        source ~/.bashrc
-        conda env create -f environment.yml
+    - name: Create Conda environment
+      run: conda env create -f environment.yml
 
-    - name: Activate Conda environment
-      run: |
-        conda activate cppdev
-        
     - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: conda run -n cppdev cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: conda run -n cppdev cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Test
       working-directory: ${{github.workspace}}/build
-      run: ctest -C ${{env.BUILD_TYPE}}
+      run: conda run -n cppdev ctest -C ${{env.BUILD_TYPE}}
